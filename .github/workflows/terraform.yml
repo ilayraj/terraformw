@@ -44,3 +44,4 @@ jobs:
         # We run plan only on pull requests to get a summary of changes
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
+ 
