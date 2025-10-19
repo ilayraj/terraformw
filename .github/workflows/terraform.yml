@@ -1,0 +1,46 @@
+name: 'Terraform CI - Validate & Plan'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform_validation:
+    name: 'Terraform Validation and Plan'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Set the working directory for all 'run' steps in this job
+        working-directory: ./terraform
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. Setup the Terraform CLI
+      - name: Setup Terraform
+        # This is a pre-built Action by HashiCorp to install a specific Terraform version
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.x # Specify a recent, stable version
+
+      # 3. Initialize the backend and download providers
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      # 4. Check that the configuration is valid
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      # 5. Generate a plan (shows what changes will occur)
+      - name: Terraform Plan
+        id: plan
+        # We run plan only on pull requests to get a summary of changes
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color
