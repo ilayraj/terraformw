@@ -15,3 +15,4 @@ resource "local_file" "test_file" {
 output "file_path" {
   value = local_file.test_file.filename
 }
+  
